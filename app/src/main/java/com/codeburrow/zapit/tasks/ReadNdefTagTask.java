@@ -18,7 +18,18 @@ import java.util.Arrays;
  * ===================================================
  */
 public class ReadNdefTagTask extends AsyncTask<Tag, Void, String> {
+
     private static final String LOG_TAG = ReadNdefTagTask.class.getSimpleName();
+    private ReadNdefTagResponse asyncResponse = null;
+
+    public interface ReadNdefTagResponse {
+
+        void processReadNdefTagFinish(String result);
+    }
+
+    public ReadNdefTagTask(ReadNdefTagResponse asyncResponse) {
+        this.asyncResponse = asyncResponse;
+    }
 
     @Override
     protected String doInBackground(Tag... params) {
@@ -76,7 +87,7 @@ public class ReadNdefTagTask extends AsyncTask<Tag, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         if (result != null) {
-            Log.e(LOG_TAG, result);
+            asyncResponse.processReadNdefTagFinish(result);
         }
     }
 }

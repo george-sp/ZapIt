@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.codeburrow.zapit.tasks.ReadNdefTagTask;
+import com.codeburrow.zapit.tasks.ReadNdefTagTask.ReadNdefTagResponse;
 
 /**
  * @author George Spiridakis <george@codeburrow.com>
@@ -19,7 +20,8 @@ import com.codeburrow.zapit.tasks.ReadNdefTagTask;
  * ---------->    http://codeburrow.com    <----------
  * ===================================================
  */
-public class ScanNfcActivity extends AppCompatActivity {
+public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagResponse
+{
 
     private static final String LOG_TAG = ScanNfcActivity.class.getSimpleName();
     public static final String MIME_TEXT_PLAIN = "text/plain";
@@ -68,7 +70,7 @@ public class ScanNfcActivity extends AppCompatActivity {
             if (MIME_TEXT_PLAIN.equals(type)) {
                 Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-                new ReadNdefTagTask().execute(tag);
+                new ReadNdefTagTask(this).execute(tag);
             } else {
                 Log.e(LOG_TAG, "Wrong mime type: " + type);
             }
@@ -115,4 +117,14 @@ public class ScanNfcActivity extends AppCompatActivity {
         nfcAdapter.disableForegroundDispatch(activity);
     }
 
+    /**
+     * This method runs when the async task that reads the tag -
+     * ReadNdefTagTask runs the onPostExecute
+     *
+     * @param result The result of the ReadNdefTagTask
+     */
+    @Override
+    public void processReadNdefTagFinish(String result) {
+        Log.e(LOG_TAG, "NDEF message: " + result);
+    }
 }

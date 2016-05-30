@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.Ndef;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -73,19 +72,6 @@ public class ScanNfcActivity extends AppCompatActivity {
             } else {
                 Log.e(LOG_TAG, "Wrong mime type: " + type);
             }
-        } else if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-            // In case we still use the ACTION_TECH_DISCOVERED intent.
-            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String[] techList = tag.getTechList();
-            String searchedTech = Ndef.class.getName();
-
-            for (String tech : techList) {
-                if (searchedTech.equals(tech)) {
-
-                    new ReadNdefTagTask().execute(tag);
-                    break;
-                }
-            }
         }
     }
 
@@ -104,7 +90,7 @@ public class ScanNfcActivity extends AppCompatActivity {
         IntentFilter[] filters = new IntentFilter[1];
         String[][] techList = new String[][]{};
 
-        /*
+        /**
          * Note: Use the same intent-filter as in your AndroidManifest.xml.
          */
         filters[0] = new IntentFilter();

@@ -24,7 +24,7 @@ public class ReadNdefTagTask extends AsyncTask<Tag, Void, String> {
 
     public interface ReadNdefTagResponse {
 
-        void processReadNdefTagFinish(String result);
+        void onProcessReadNdefTagFinish(String result);
     }
 
     public ReadNdefTagTask(ReadNdefTagResponse asyncResponse) {
@@ -87,7 +87,7 @@ public class ReadNdefTagTask extends AsyncTask<Tag, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         if (result != null) {
-            asyncResponse.processReadNdefTagFinish(result);
+            asyncResponse.onProcessReadNdefTagFinish(result);
         }
     }
 }

@@ -126,7 +126,7 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
      * @param result The result of the ReadNdefTagTask
      */
     @Override
-    public void processReadNdefTagFinish(String result) {
+    public void onProcessReadNdefTagFinish(String result) {
         Log.e(LOG_TAG, "NDEF message: " + result);
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(NDEF_MESSAGE_EXTRA, result);

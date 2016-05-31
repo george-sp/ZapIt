@@ -20,8 +20,7 @@ import com.codeburrow.zapit.tasks.ReadNdefTagTask.ReadNdefTagResponse;
  * ---------->    http://codeburrow.com    <----------
  * ===================================================
  */
-public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagResponse
-{
+public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagResponse {
 
     private static final String LOG_TAG = ScanNfcActivity.class.getSimpleName();
     public static final String NDEF_MESSAGE_EXTRA = "ndef_message_extra";
@@ -43,6 +42,8 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
 
         Log.e(LOG_TAG, "Supported: " + mNfcAdapterSupported);
         Log.e(LOG_TAG, "Enabled: " + mNfcAdapterEnabled);
+
+        handleIntent(getIntent());
     }
 
     @Override

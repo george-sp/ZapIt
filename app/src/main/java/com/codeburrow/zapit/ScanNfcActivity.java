@@ -24,6 +24,7 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
 {
 
     private static final String LOG_TAG = ScanNfcActivity.class.getSimpleName();
+    public static final String NDEF_MESSAGE_EXTRA = "ndef_message_extra";
     public static final String MIME_TEXT_PLAIN = "text/plain";
 
     private NfcAdapter mNfcAdapter;
@@ -126,5 +127,8 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
     @Override
     public void processReadNdefTagFinish(String result) {
         Log.e(LOG_TAG, "NDEF message: " + result);
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(NDEF_MESSAGE_EXTRA, result);
+        startActivity(intent);
     }
 }

@@ -1,2 +1,2 @@
 # ZapIt
-Easy, Safe, Fast Payments
+Easy, Safe, Fast Purchases

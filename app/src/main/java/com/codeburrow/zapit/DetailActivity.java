@@ -30,8 +30,8 @@ public class DetailActivity extends AppCompatActivity implements FindProductTask
 
         mSlugTextView = (TextView) findViewById(R.id.detail_slug_textview);
         mNameTextView = (TextView) findViewById(R.id.detail_name_textview);
-        mPriceTextView = (TextView) findViewById(R.id.detail_description_textview);
-        mDescriptionTextView = (TextView) findViewById(R.id.detail_price_textview);
+        mPriceTextView = (TextView) findViewById(R.id.detail_price_textview);
+        mDescriptionTextView = (TextView) findViewById(R.id.detail_description_textview);
         mPayedTextView = (TextView) findViewById(R.id.detail_payed_textview);
 
         Bundle intentExtras = getIntent().getExtras();

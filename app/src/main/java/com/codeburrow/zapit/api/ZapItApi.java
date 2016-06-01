@@ -31,8 +31,15 @@ import java.util.List;
 public class ZapItApi {
 
     private static final String LOG_TAG = ZapItApi.class.getSimpleName();
+    public static final String STATUS_CODE = "status_code";
     public static final String DATA = "data";
     public static final String SLUG = "slug";
+    public static final String NAME = "name";
+    public static final String PRICE = "price";
+    public static final String DESCRIPTION = "description";
+    public static final String PAYED = "payed";
+    public static final String PRODUCT_SLUG_QUERY_PARAM = "product-slug";
+
 
     public static JSONObject makeGetRequest(String url, List<NameValuePair> params) {
         if (null == params) {
@@ -42,6 +49,8 @@ public class ZapItApi {
         String paramString = URLEncodedUtils.format(params, "UTF-8");
         url += "?" + paramString;
         HttpGet httpGet = new HttpGet(url);
+
+        Log.e(LOG_TAG, url);
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpResponse httpResponse = null;

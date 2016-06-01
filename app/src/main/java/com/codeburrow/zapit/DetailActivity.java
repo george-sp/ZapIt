@@ -1,8 +1,10 @@
 package com.codeburrow.zapit;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.codeburrow.zapit.api.ZapItApi;
@@ -14,6 +16,8 @@ import org.json.JSONObject;
 public class DetailActivity extends AppCompatActivity implements FindProductTask.FindProductResponse {
 
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+
+    public static final String PRODUCT_SLUG_EXTRA = "product_slug_extra";
 
     private TextView mSlugTextView;
     private TextView mNameTextView;
@@ -45,9 +49,9 @@ public class DetailActivity extends AppCompatActivity implements FindProductTask
 
     @Override
     public void onProcessFindProductFinish(JSONObject result) {
-        getProductDetailsFromJson(result);
-
         Log.e(LOG_TAG, result.toString());
+
+        getProductDetailsFromJson(result);
     }
 
     private void getProductDetailsFromJson(JSONObject productJson) {
@@ -62,4 +66,9 @@ public class DetailActivity extends AppCompatActivity implements FindProductTask
         }
     }
 
+    public void intentPaymentActivity(View view) {
+        Intent intent = new Intent(this, PaymentActivity.class);
+        intent.putExtra(PRODUCT_SLUG_EXTRA, mNdefMessage);
+        startActivity(intent);
+    }
 }

@@ -30,15 +30,14 @@ public class ResetPaymentTask extends AsyncTask<Void, Void, JSONObject> {
     }
 
     @Override
+    protected JSONObject doInBackground(Void... params) {
+        return PaymentApi.resetPayment(productSlug);
+    }
+
+    @Override
     protected void onPostExecute(JSONObject productObject) {
         if (productObject != null) {
             asyncResponse.onProcessResetPaymentFinish(productObject);
         }
     }
-
-    @Override
-    protected JSONObject doInBackground(Void... params) {
-        return PaymentApi.resetPayment(productSlug);
-    }
-
 }

@@ -9,9 +9,17 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
+import com.codeburrow.zapit.tasks.GetAllProductsTask;
+import com.codeburrow.zapit.tasks.GetAllProductsTask.GetAllProductsResponse;
 import com.codeburrow.zapit.tasks.ReadNdefTagTask;
 import com.codeburrow.zapit.tasks.ReadNdefTagTask.ReadNdefTagResponse;
+import com.codeburrow.zapit.tasks.ResetPaymentTask;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * @author George Spiridakis <george@codeburrow.com>
@@ -20,7 +28,7 @@ import com.codeburrow.zapit.tasks.ReadNdefTagTask.ReadNdefTagResponse;
  * ---------->    http://codeburrow.com    <----------
  * ===================================================
  */
-public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagResponse {
+public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagResponse, GetAllProductsResponse, ResetPaymentTask.ResetPaymentResponse {
 
     private static final String LOG_TAG = ScanNfcActivity.class.getSimpleName();
     public static final String NDEF_MESSAGE_EXTRA = "ndef_message_extra";
@@ -131,5 +139,23 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(NDEF_MESSAGE_EXTRA, result);
         startActivity(intent);
+    }
+
+    public void resetAllPayedStatus(View view) {
+        new GetAllProductsTask(this).execute();
+    }
+
+    @Override
+    public void onProcessGetAllProductsFinish(ArrayList<String> products) {
+        Log.e(LOG_TAG, products.toString());
+
+        for (String product : products) {
+            new ResetPaymentTask(this, product).execute();
+        }
+    }
+
+    @Override
+    public void onProcessResetPaymentFinish(JSONObject result) {
+        Log.e(LOG_TAG, result.toString());
     }
 }

@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.codeburrow.zapit.tasks.GetAllProductsTask;
 import com.codeburrow.zapit.tasks.GetAllProductsTask.GetAllProductsResponse;
@@ -34,6 +36,10 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
     public static final String NDEF_MESSAGE_EXTRA = "ndef_message_extra";
     public static final String MIME_TEXT_PLAIN = "text/plain";
 
+    private boolean mCustomerMode;
+    private boolean mMerchantMode;
+    private boolean mResetMode;
+
     private NfcAdapter mNfcAdapter;
     private boolean mNfcAdapterSupported;
     private boolean mNfcAdapterEnabled;
@@ -42,6 +48,8 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_nfc);
+
+        setScanMode();
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -129,33 +137,68 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
 
     /**
      * This method runs when the async task that reads the tag -
-     * ReadNdefTagTask runs the onPostExecute
+     * ReadNdefTagTask runs the onPostExecute.
+     * The result of the ReadNdefTagTask.
      *
-     * @param result The result of the ReadNdefTagTask
+     * @param productSlug The message that is stored in the tag.
      */
     @Override
-    public void onProcessReadNdefTagFinish(String result) {
-        Log.e(LOG_TAG, "NDEF message: " + result);
-        Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(NDEF_MESSAGE_EXTRA, result);
-        startActivity(intent);
+    public void onProcessReadNdefTagFinish(String productSlug) {
+        Log.e(LOG_TAG, "NDEF message: " + productSlug);
+
+        if (mCustomerMode) {
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra(NDEF_MESSAGE_EXTRA, productSlug);
+            startActivity(intent);
+        } else if (mMerchantMode) {
+
+        } else if (mResetMode) {
+            new ResetPaymentTask(this, productSlug).execute();
+        }
+
+    }
+
+    /**
+     * This method runs when the async task that reads the tag -
+     * GetAllProductsTask runs the onPostExecute.
+     * The result of the GetAllProductsTask.
+     *
+     * @param productsArray A JSONArray with all products.
+     */
+    @Override
+    public void onProcessGetAllProductsFinish(ArrayList<String> productsArray) {
+        Log.e(LOG_TAG, productsArray.toString());
+
+        for (String product : productsArray) {
+            new ResetPaymentTask(this, product).execute();
+        }
+    }
+
+    /**
+     * This method runs when the async task that reads the tag -
+     * ResetPaymentTask runs the onPostExecute.
+     * The result of the ResetPaymentTask.
+     *
+     * @param productObject A JSONObject with product's information.
+     */
+    @Override
+    public void onProcessResetPaymentFinish(JSONObject productObject) {
+        Log.e(LOG_TAG, productObject.toString());
+
+        Toast.makeText(ScanNfcActivity.this, productObject.toString(), Toast.LENGTH_SHORT).show();
     }
 
     public void resetAllPayedStatus(View view) {
         new GetAllProductsTask(this).execute();
     }
 
-    @Override
-    public void onProcessGetAllProductsFinish(ArrayList<String> products) {
-        Log.e(LOG_TAG, products.toString());
-
-        for (String product : products) {
-            new ResetPaymentTask(this, product).execute();
-        }
+    public void onRadioButtonClicked(View view) {
+        setScanMode();
     }
 
-    @Override
-    public void onProcessResetPaymentFinish(JSONObject result) {
-        Log.e(LOG_TAG, result.toString());
+    private void setScanMode() {
+        mCustomerMode = ((RadioButton) findViewById(R.id.customer_radiobutton)).isChecked();
+        mMerchantMode = ((RadioButton) findViewById(R.id.merchant_radiobutton)).isChecked();
+        mResetMode = ((RadioButton) findViewById(R.id.reset_radiobutton)).isChecked();
     }
 }

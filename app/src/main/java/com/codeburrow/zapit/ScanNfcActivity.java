@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -13,12 +15,17 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.codeburrow.zapit.api.ZapItApi;
 import com.codeburrow.zapit.tasks.GetAllProductsTask;
 import com.codeburrow.zapit.tasks.GetAllProductsTask.GetAllProductsResponse;
+import com.codeburrow.zapit.tasks.GetPaymentStatusTask;
+import com.codeburrow.zapit.tasks.GetPaymentStatusTask.GetPaymentStatusResponse;
 import com.codeburrow.zapit.tasks.ReadNdefTagTask;
 import com.codeburrow.zapit.tasks.ReadNdefTagTask.ReadNdefTagResponse;
 import com.codeburrow.zapit.tasks.ResetPaymentTask;
+import com.codeburrow.zapit.tasks.ResetPaymentTask.ResetPaymentResponse;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -30,7 +37,7 @@ import java.util.ArrayList;
  * ---------->    http://codeburrow.com    <----------
  * ===================================================
  */
-public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagResponse, GetAllProductsResponse, ResetPaymentTask.ResetPaymentResponse {
+public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagResponse, GetAllProductsResponse, ResetPaymentResponse, GetPaymentStatusResponse {
 
     private static final String LOG_TAG = ScanNfcActivity.class.getSimpleName();
     public static final String NDEF_MESSAGE_EXTRA = "ndef_message_extra";
@@ -44,12 +51,23 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
     private boolean mNfcAdapterSupported;
     private boolean mNfcAdapterEnabled;
 
+    public MediaPlayer mediaPlayer;
+    private boolean mediaPlayerPlaying = false;
+    private static SharedPreferences sharedPreferences;
+    private static final String PREFS_NAME = "ScanActivityPreferences";
+    private static final String PREFS_MEDIA_PLAYING = "MediaPlayerPlaying";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_nfc);
 
         setScanMode();
+
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.pop_drip);
+        mediaPlayer.setLooping(true);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -66,12 +84,29 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
     protected void onResume() {
         super.onResume();
         if (mNfcAdapterSupported) setupForegroundDispatch(this, mNfcAdapter);
+        if (sharedPreferences.getBoolean(PREFS_MEDIA_PLAYING, false)) startAlarm();
+        setScanMode();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         if (mNfcAdapterSupported) stopForegroundDispatch(this, mNfcAdapter);
+        mediaPlayerPlaying = (mediaPlayer != null) && mediaPlayer.isPlaying();
+
+        // Save in sharedPreferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PREFS_MEDIA_PLAYING, mediaPlayerPlaying);
+        editor.commit();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
     }
 
     @Override
@@ -151,7 +186,9 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
             intent.putExtra(NDEF_MESSAGE_EXTRA, productSlug);
             startActivity(intent);
         } else if (mMerchantMode) {
-
+            if (!mediaPlayer.isPlaying()) {
+                new GetPaymentStatusTask(this, productSlug).execute();
+            }
         } else if (mResetMode) {
             new ResetPaymentTask(this, productSlug).execute();
         }
@@ -171,6 +208,24 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
 
         for (String product : productsArray) {
             new ResetPaymentTask(this, product).execute();
+        }
+    }
+
+    /**
+     * This method runs when the async task that reads the tag -
+     * GetPaymentStatusTask runs the onPostExecute.
+     * The result of the GetPaymentStatusTask.
+     *
+     * @param productObject A JSONArray with all products.
+     */
+    @Override
+    public void onProcessGetPaymentStatusFinish(JSONObject productObject) {
+        try {
+            if (!productObject.getJSONObject(ZapItApi.DATA).getBoolean(ZapItApi.PAYED)) {
+                startAlarm();
+            }
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage());
         }
     }
 
@@ -200,5 +255,15 @@ public class ScanNfcActivity extends AppCompatActivity implements ReadNdefTagRes
         mCustomerMode = ((RadioButton) findViewById(R.id.customer_radiobutton)).isChecked();
         mMerchantMode = ((RadioButton) findViewById(R.id.merchant_radiobutton)).isChecked();
         mResetMode = ((RadioButton) findViewById(R.id.reset_radiobutton)).isChecked();
+    }
+
+    public void startAlarm() {
+        mediaPlayer.start();
+    }
+
+    public void stopAlarm(View view) {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
     }
 }

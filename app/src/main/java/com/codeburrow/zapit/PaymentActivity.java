@@ -84,7 +84,7 @@ public class PaymentActivity extends AppCompatActivity implements GetPaymentStat
 
         if (!mPayedStatus) {
             mRequestPaymentButton.setEnabled(!mPayedStatus);
-            mRequestPaymentButton.setBackgroundResource(android.R.color.holo_green_light);
+            mRequestPaymentButton.setBackgroundResource(R.color.colorPositive);
         } else {
             mImageView.setImageResource(R.drawable.not_available);
         }

@@ -4,7 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/colorPrimaryBackground">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,6 +22,7 @@
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:text="Scanning..."
+            android:textColor="@color/colorTextDark"
             android:textSize="40sp"/>
 
         <ProgressBar
@@ -38,11 +40,11 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/scanning_progress_bar"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="@android:color/holo_red_light"
+            android:background="@color/colorNegative"
             android:onClick="stopAlarm"
             android:text="STOP ALARM"
             android:textSize="30sp"
-            />
+            android:textColor="@color/colorTextLight"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -64,6 +66,7 @@
                     android:onClick="onRadioButtonClicked"
                     android:text="Customer"
                     android:textAlignment="center"
+                    android:textColor="@color/colorTextDark"
                     android:textSize="30sp"/>
 
                 <RadioButton
@@ -74,6 +77,7 @@
                     android:onClick="onRadioButtonClicked"
                     android:text="Merchant"
                     android:textAlignment="center"
+                    android:textColor="@color/colorTextDark"
                     android:textSize="30sp"/>
 
                 <RadioButton
@@ -84,6 +88,7 @@
                     android:onClick="onRadioButtonClicked"
                     android:text="Reset"
                     android:textAlignment="center"
+                    android:textColor="@color/colorTextDark"
                     android:textSize="30sp"/>
 
             </RadioGroup>
@@ -95,7 +100,9 @@
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:onClick="resetAllPayedStatus"
+                android:background="@color/colorNeutral"
                 android:text="Reset All"
+                android:textColor="@color/colorTextDark"
                 android:textSize="30sp"/>
 
         </LinearLayout>

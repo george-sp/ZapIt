@@ -9,6 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/colorPrimaryBackground"
     tools:context="com.codeburrow.zapit.PaymentActivity">
 
     <TextView
@@ -16,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textColor="@android:color/black"
+        android:textColor="@color/colorTextDark"
         android:textSize="30sp"/>
 
     <TextView
@@ -25,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/purchase_name_textview"
         android:textAlignment="center"
-        android:textColor="@android:color/black"
+        android:textColor="@color/colorTextMid"
         android:textSize="30sp"/>
 
     <ImageView
@@ -47,10 +48,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/white"
+            android:background="@color/colorNeutral"
             android:onClick="requestScan"
             android:text="SCAN"
-            android:textColor="@android:color/holo_green_light"
+            android:textColor="@color/colorTextDark"
             android:textSize="30sp"/>
 
         <Button
@@ -60,7 +61,7 @@
             android:layout_weight="1"
             android:onClick="requestPayment"
             android:text="BUY IT"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorTextLight"
             android:textSize="30sp"/>
 
     </LinearLayout>
